@@ -1,0 +1,106 @@
+replicaCount: 1
+namespace: test-helm
+labels:
+  app: test-app
+
+deployment:
+  containername: test-deployment
+  
+image:
+  repository: dockertesting047
+  pullPolicy: Always
+  tag: flask-calc:1.0.0
+  secrets: dockerhub
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+    
+strategy:
+  rollingUpdate:
+    maxSurge: 50%
+    maxUnavailable: 50%
+  type: RollingUpdate
+
+ports:
+  test-port: 5001
+  # port_name: containerport
+
+readinessProbe:
+  enabled: false
+  path: /
+  port: 5000
+  initialDelaySeconds: 20
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 5
+
+env:
+  # service_provider: azure
+  # MESSAGE: "hello world"
+  # name: value
+
+envFrom:
+  # - configMapRef:
+  #     name: lantern-configs
+  # - secretRef:
+  #     name: lantern-secrets
+
+volumes:
+  # name: test-volume
+  
+  # persistentVolumeClaim:
+  #   claimName: airflow-claim
+  
+  # hostPath:
+  #   # directory location on host
+  #   path: /data
+  
+  # emptyDir: {}
+
+  # configMap:
+  #   name: lantern-configs
+  #   items:
+  #     - key: AIRFLOW_HOST
+  #       path: AIRFLOW_HOST
+
+volumeMounts:
+  mountPath: "/var"
+
+nodeSelector:
+  # workload: loki
+
+securityContext:
+  # privileged: true
+
+service:
+  enabled: true
+  servicename: test-service
+  serviceport: 5001
+  targetport: 5001
+  type: NodePort
+  
+  
+ingress:
+  enabled: true
+  ingressname: test-ingress
+  annotations: 
+    alb.ingress.kubernetes.io/group.name: madstack
+    appgw.ingress.kubernetes.io/use-private-ip: "true"
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+  hosts:
+    - host: ingress.test.msd.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+        - path: /calc
+          pathType: ImplementationSpecific
+        - path: /result
+          pathType: ImplementationSpecific
+  
+
