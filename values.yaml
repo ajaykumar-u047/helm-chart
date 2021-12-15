@@ -30,6 +30,7 @@ ports:
   test-port: 5001
   # port_name: containerport
 
+# To enable readinessProbe add enabled: true
 readinessProbe:
   enabled: false
   path: /
@@ -46,12 +47,18 @@ env:
 
 envFrom:
   # - configMapRef:
-  #     name: lantern-configs
+  #     name: example-configs
   # - secretRef:
-  #     name: lantern-secrets
+  #     name: example-secrets
 
 volumes:
   # name: test-volume
+  
+  # configMap:
+  #   name: lantern-configs
+  #   items:
+  #     - key: AIRFLOW_HOST
+  #       path: AIRFLOW_HOST
   
   # persistentVolumeClaim:
   #   claimName: airflow-claim
@@ -61,32 +68,34 @@ volumes:
   #   path: /data
   
   # emptyDir: {}
+  
+  # To Add volume should give name followed by any type of volume
+  # eg:
+  # name: test-volume
+  # emptyDir: {}
 
-  # configMap:
-  #   name: lantern-configs
-  #   items:
-  #     - key: AIRFLOW_HOST
-  #       path: AIRFLOW_HOST
+  
 
 volumeMounts:
-  mountPath: "/var"
+  # mountPath: "/var"
 
 nodeSelector:
-  # workload: loki
+  # workload: test
 
 securityContext:
   # privileged: true
 
+# To enable service add enabled: true
 service:
-  enabled: true
+  enabled: false
   servicename: test-service
   serviceport: 5001
   targetport: 5001
   type: NodePort
   
-  
+# To enable Ingress add enabled: true
 ingress:
-  enabled: true
+  enabled: false
   ingressname: test-ingress
   annotations: 
     alb.ingress.kubernetes.io/group.name: madstack
