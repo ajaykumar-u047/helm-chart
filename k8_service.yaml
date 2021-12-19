@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: test-service
+  namespace: test-helm
+  labels:
+    app: test
+spec:
+  ports:
+    - name: test-service
+      protocol: TCP
+      port: 5001
+      targetPort: 5001
+  type: NodePort
+  selector:
+    app: test

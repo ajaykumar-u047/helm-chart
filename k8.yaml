@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deployment
+  namespace: test-helm
+  labels:
+    app: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      containers:
+      - image: dockertesting047/flask-calc:1.0.0
+        imagePullPolicy: Always
+        name: test-deployment
+        # env:
+        # - name: SERVICE_PROVIDER
+        #   value: "azure"
+        ports:
+        - containerPort: 5001
+          name: test-deployment
+      imagePullSecrets:
+      - name: dockerhub
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate

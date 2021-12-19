@@ -1,49 +1,39 @@
-# Helm chart
+# Tilt 
 
-This chart deploys an API with `Deployment`, `Service`, `Ingress` on a Kubernetes cluster using the Helm package manager.
+### To install Tilt in MACOS/Linux
 
-## Installing Helm chart:
 ```
-helm install <my-release-name> -f values.yaml <location of the values.yaml found> -n <namespace>
+curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
 ```
-To install the chart with the release name `my-release`:
-```
-helm install my-release -f values.yaml . -n namespace
-```
-The command deploys the chart on the Kubernetes cluster in the specified namespace(optional). 
 
 &nbsp;
 
-## Upgrading Helm chart:
-```
-helm upgrade <my-release-name> -f values.yaml <location of the values.yaml found> -n <namespace>
-```
-To update the chart with the release name `my-release`:
-```
-helm upgrade my-release -f values.yaml . -n namespace
-```
-The command upgrades the chart on the Kubernetes cluster in the specified namespace(optional). 
+### Tiltfile
 
-&nbsp;
+//cfg variable which reads the tilt_config.json where k8s context and docker container registry info are stored.
+> cfg = read_json('tilt_config.json')
 
-## Uninstalling Helm chart:
-```
-helm uninstall <my-release-name> -n <namespace>
-```
-To uninstall the chart with the release name `my-release`:
-```
-helm uninstall my-release -n namespace
-```
-The command removes all the Kubernetes components associated with the chart and deletes the release.
+> k8s_yaml(['k8.yaml','k8_service.yaml'])
 
-&nbsp;
+> k8s_resource('test-deployment', port_forwards=5001)
 
-## List Helm release:
-```
-helm ls -n <namespace>
-```
-To list the helm releases in the specified namespace: 
-```
-helm ls -n namespace
+//Replace the cluster context where you have to deploy
+> allow_k8s_contexts(cfg['K8S_CONTEXT'])
+
+//Container registry to sync images from ...
+> docker_build(cfg['CONTAINER_REGISTRY'], '.', build_args={})
+
+can be added in tilt_config.json 
+//"CONTAINER_REGISTRY": "dockertesting047/flask-calc:1.0.0"
+
+### To run the tilt
+
+``` 
+tilt up
 ```
 
+### To stop/remove the k8s components
+
+```
+tilt down
+```
